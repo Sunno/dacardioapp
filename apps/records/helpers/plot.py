@@ -168,13 +168,13 @@ def get_PNN50_image(channel, file_like, initial_time, final_time, interval,
     )
 
 
-def get_fft_image(channel, file_like, initial_time, final_time, interval,
+def get_fft_image(channel, file_like, initial_time, final_time, interval,  # noqa
                   format_='png', clear=True, color='r', line_style='-',
                   label=None, title=None):
     lf, hf, power, relation, x = channel.get_fft(
         initial_time, final_time, interval)
     format_ = format_
-    ylabel = _('')
+    ylabel = _('(un)')
     xlabel = _('Intervalo (%(interval)d m)') % {'interval': interval / 60000}
     hide_axis = not channel.is_time
     clear = clear
@@ -224,7 +224,7 @@ def get_fft_image(channel, file_like, initial_time, final_time, interval,
     if xlabel:
         plt.xlabel(xlabel)
     if ylabel:
-        plt.ylabel(ylabel)
+        plt.ylabel('$ms^2$')
 
     plt.subplot(3, 1, 3)
     plt.plot(
@@ -239,7 +239,7 @@ def get_fft_image(channel, file_like, initial_time, final_time, interval,
     if xlabel:
         plt.xlabel(xlabel)
     if ylabel:
-        plt.ylabel(ylabel)
+        plt.ylabel(_('LF(un)/HF(un)'))
 
     fig = plt.figure()
     fig.gca()
@@ -291,6 +291,10 @@ def get_all_images(channel, file_like, initial_time, final_time, interval,
     if clear:
         plt.clf()
     plt.figure(1)
+
+    # config
+    LABEL_SIZE = 5
+
     # All signal
 
     x, y = get_all_channel_points(channel)
@@ -299,8 +303,10 @@ def get_all_images(channel, file_like, initial_time, final_time, interval,
              color=random.rand(3, 1), label=None)
     ax1.grid(False)
     ax1.set_xlim([min(x), max(x)])
-    ax1.get_xaxis().set_visible(False)
-    ax1.get_yaxis().set_visible(False)
+    ax1.set_ylabel(_('Tiempo (ms)') if channel.is_time else None)
+    ax1.set_xlabel(_('Secuencia') if channel.is_time else 'ms')
+    ax1.tick_params(axis='both', which='major', labelsize=LABEL_SIZE + 3)
+
     # Signal
     x, y = get_channel_points(channel, initial_time, final_time)
     # setting background for our interval
@@ -312,6 +318,9 @@ def get_all_images(channel, file_like, initial_time, final_time, interval,
         _(u'Señal') if channel.type != 'r' else _('Serie temporal RR'))
     ax2.grid(True)
     ax2.set_xlim([min(x), max(x)])
+    ax2.set_ylabel(_('Tiempo (ms)') if channel.is_time else None)
+    ax2.set_xlabel(_('Secuencia') if channel.is_time else 'ms')
+    ax2.tick_params(axis='both', which='major', labelsize=LABEL_SIZE)
     # Media
     x, y = channel.get_media_points(initial_time, final_time, interval)
     ax3 = plt.subplot2grid((4, 2), (1, 1))
@@ -320,6 +329,10 @@ def get_all_images(channel, file_like, initial_time, final_time, interval,
     ax3.set_title(_('Media'))
     ax3.grid(True)
     ax3.set_xlim([min(x), max(x)])
+    ax3.tick_params(axis='both', which='major', labelsize=LABEL_SIZE)
+    ax3.set_ylabel(_('Media (ms)') if channel.is_time else None)
+    ax3.set_xlabel(
+        _('Intervalo (%(interval)d m)') % {'interval': interval / 60000})
     # STD
     x, y = channel.get_standard_deviation_points(
         initial_time, final_time, interval)
@@ -328,12 +341,19 @@ def get_all_images(channel, file_like, initial_time, final_time, interval,
     ax4.grid(True)
     ax4.plot(x, y, line_style,
              color=random.rand(3, 1), label=label if label else '')
+    ax4.tick_params(axis='both', which='major', labelsize=LABEL_SIZE)
+    ax4.set_ylabel(_('STD (ms)') if channel.is_time else None)
+    ax4.set_xlabel(
+        _('Intervalo (%(interval)d m)') % {'interval': interval / 60000})
     # Return map
     x, y = channel.get_return_map(initial_time, final_time)
     ax5 = plt.subplot2grid((4, 2), (2, 1))
     ax5.set_title(_('Mapa de retorno'))
     ax5.grid(True)
     ax5.plot(x, y, '.', color=random.rand(3, 1), label=label if label else '')
+    ax5.tick_params(axis='both', which='major', labelsize=LABEL_SIZE)
+    ax5.set_ylabel('$RR_{t + 1} (ms)$')
+    ax5.set_xlabel('$RR_t (ms)$')
     # SDSD
     x, y = channel.get_SDSD(initial_time, final_time, interval)
     ax6 = plt.subplot2grid((4, 2), (3, 0))
@@ -341,6 +361,10 @@ def get_all_images(channel, file_like, initial_time, final_time, interval,
     ax6.grid(True)
     ax6.plot(x, y, line_style, color=random.rand(3, 1),
              label=label if label else '')
+    ax6.tick_params(axis='both', which='major', labelsize=LABEL_SIZE)
+    ax6.set_ylabel(_('SDSD (ms)'))
+    ax6.set_xlabel(
+        _('Intervalo (%(interval)d m)') % {'interval': interval / 60000})
     # PNN50
     x, y = channel.get_PNN50_points(
         initial_time, final_time, interval)
@@ -349,6 +373,10 @@ def get_all_images(channel, file_like, initial_time, final_time, interval,
     ax7.grid(True)
     ax7.plot(x, y, line_style, color=random.rand(3, 1),
              label=label if label else '')
+    ax7.tick_params(axis='both', which='major', labelsize=LABEL_SIZE)
+    ax7.set_ylabel('PNN50 (ms)')
+    ax7.set_xlabel(
+        _('Intervalo (%(interval)d m)') % {'interval': interval / 60000})
 
     # Finally drawing
     plt.tight_layout()
