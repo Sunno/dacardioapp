@@ -275,8 +275,9 @@ def get_histogram(channel, initial_time, final_time, file_like, bins=10,
         }
     plt.clf()
     plt.hist([point.y for point in points], bins)
-    plt.xlabel(xlabel if xlabel is not None else _('$RR_t$'))
-    plt.ylabel(ylabel if ylabel is not None else _('Frecuencia'))
+    plt.xlabel(xlabel if xlabel is not None else _('$RR_t (ms)$'))
+    plt.ylabel(
+        ylabel if ylabel is not None else _(u'Frecuencia (cantidad)'))
     plt.title(title)
     plt.grid(True)
     if file_like is not None:
