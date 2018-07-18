@@ -38,9 +38,5 @@ class Migration(migrations.Migration):
         migrations.AlterModelOptions(
             name='ses',
             options={'verbose_name': 'estatus socioecon\xf3mico'},
-        ),
-        migrations.RemoveField(
-            model_name='patient',
-            name='city',
-        ),
+        )
     ]

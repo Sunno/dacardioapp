@@ -13,11 +13,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterField(
             model_name='patient',
-            name='city',
-            field=models.ForeignKey(related_name='patients', blank=True, to='cities.City', null=True),
-        ),
-        migrations.AlterField(
-            model_name='patient',
             name='street',
             field=models.TextField(default=b'', blank=True),
         ),

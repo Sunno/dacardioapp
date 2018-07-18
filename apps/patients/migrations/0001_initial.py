@@ -8,7 +8,6 @@ from django.conf import settings
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cities', '__first__'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
@@ -63,7 +62,6 @@ class Migration(migrations.Migration):
                 ('dwelling', models.BooleanField(default=True)),
                 ('street', models.TextField()),
                 ('street_2', models.TextField()),
-                ('city', models.ForeignKey(related_name='patients', to='cities.City')),
                 ('education', models.ForeignKey(related_name='patients', to='patients.Education')),
                 ('habits', models.ManyToManyField(related_name='patients', to='patients.Habit')),
                 ('occupation', models.ForeignKey(related_name='patients', to='patients.Occupation')),
