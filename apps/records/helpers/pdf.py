@@ -1,5 +1,5 @@
 # coding=utf-8
-import StringIO
+from six import BytesIO
 from PIL import Image
 from fpdf import FPDF
 from django.conf import settings
@@ -71,7 +71,7 @@ def create_pdf(channel, data=None, file_like=None):
     segment_size = int(data.get(
         'segment_size', TIME_MULTIPLIER['minutes']))
     if file_like is None:
-        file_like = StringIO.StringIO()
+        file_like = BytesIO()
 
     # creating canvas and pdf properties
     width, height = settings.REPORT_PAGE_FORMAT
@@ -250,7 +250,7 @@ def create_pdf(channel, data=None, file_like=None):
     y_offset += y_inc
 
     # Drawing images
-    image_buffer = StringIO.StringIO()
+    image_buffer = BytesIO()
     plot.get_all_images(channel, image_buffer, interval_start, interval_end,
                         segment_size)
     image_buffer = ImageReader(Image.open(image_buffer))
@@ -293,7 +293,7 @@ def create_pdf(channel, data=None, file_like=None):
     y_offset += (y_inc * 2)
 
     # Images
-    image_buffer = StringIO.StringIO()
+    image_buffer = BytesIO()
     plot.get_histogram(channel, interval_start, interval_end, image_buffer,
                        int(data['request_data']['bins']))
     image_buffer = ImageReader(Image.open(image_buffer))
@@ -306,7 +306,7 @@ def create_pdf(channel, data=None, file_like=None):
                 width=image_width, height=image_height)
 
     y_offset += y_inc + image_height
-    image_buffer = StringIO.StringIO()
+    image_buffer = BytesIO()
     plot.get_fft_image(channel, image_buffer, interval_start, interval_end,
                        segment_size)
     image_buffer = ImageReader(Image.open(image_buffer))

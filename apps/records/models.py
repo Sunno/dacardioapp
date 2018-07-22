@@ -6,12 +6,15 @@ from django.db import models
 from django.db.models.aggregates import Avg, StdDev, Sum
 from django.utils.translation import ugettext as _
 from django.utils import timezone
+from django.utils import six
+from django.utils.six.moves import xrange
 from apps.records.helpers.points import get_max_pow2, get_pow2
 import numpy
 import math
 
 
 # Create your models here.
+@six.python_2_unicode_compatible
 class Record(models.Model):
     patient = models.ForeignKey('patients.Patient',
                                 verbose_name=_('paciente'),
@@ -24,13 +27,14 @@ class Record(models.Model):
     modified = models.DateTimeField(auto_now=True,
                                     verbose_name=_(u'fecha de modificación'))
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s (%s)' % (self.patient.full_name, self.created.isoformat())
 
     class Meta:
         verbose_name = _('registro')
 
 
+@six.python_2_unicode_compatible
 class Channel(models.Model):
     CHANNEL_TYPES = (
         ('n', _('Normal')),
@@ -90,8 +94,8 @@ class Channel(models.Model):
         verbose_name = _('canal')
         verbose_name_plural = _('canales')
 
-    def __unicode__(self):
-        return 'Record: %s - %s - %s - Start: %s' % (unicode(self.record),
+    def __str__(self):
+        return 'Record: %s - %s - %s - Start: %s' % (str(self.record),
                                                      self.get_type_display(),
                                                      self.name,
                                                      self.start_date.
@@ -303,10 +307,10 @@ class Channel(models.Model):
             for p in windows]
 
         # indexes = [float(i)/(pow2) for i in xrange(pow2/2)]
-        indexes = numpy.fft.fftfreq(pow2)[:pow2/2]
+        indexes = numpy.fft.fftfreq(pow2)[:int(pow2/2)]
         fft_sets = [[(math.sqrt((pts[i]**2 + pts[pow2-i-1]**2)/2.0)/(pow2/2.0),
                       ((pts[i]**2 + pts[pow2-i-1]**2) / 2.0))
-                     for i in xrange(pow2/2)]
+                     for i in xrange(int(pow2/2))]
                     for pts in fft_sets]
 
         '''vlf = [
@@ -385,6 +389,7 @@ class Channel(models.Model):
             point.save()
 
 
+@six.python_2_unicode_compatible
 class Point(models.Model):
     WAVES_TYPES = (
         (None, 'None'),
@@ -411,26 +416,28 @@ class Point(models.Model):
                             blank=True, verbose_name=_('onda detectada'))
     flagged = models.BooleanField(default=False, verbose_name=_('marca'))
 
-    def __unicode__(self):
-        return u'%s - %s - %s' % (unicode(self.channel), self.x, self.y)
+    def __str__(self):
+        return u'%s - %s - %s' % (str(self.channel), self.x, self.y)
 
     class Meta:
         verbose_name = _('punto')
 
 
+@six.python_2_unicode_compatible
 class Anomaly(models.Model):
     name = models.CharField(max_length=256, verbose_name=_('nombre'))
     order = models.PositiveSmallIntegerField(default=0, verbose_name=_('orden'))
 
     objects = OrderManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
         verbose_name = _(u'anomalía')
 
 
+@six.python_2_unicode_compatible
 class Annotation(models.Model):
     point = models.ForeignKey('records.Point', verbose_name=_('punto'))
     annotation_type = models.CharField(max_length=45, verbose_name=_('tipo'))
@@ -443,9 +450,9 @@ class Annotation(models.Model):
                                 blank=True,
                                 verbose_name=_(u'anomalía'))
 
-    def __unicode__(self):
+    def __str__(self):
         return u'(%s) - %s - %s' % (
-            unicode(self.point),
+            str(self.point),
             self.created_by.full_name,
             self.created.isoformat())
 

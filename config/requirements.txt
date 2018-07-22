@@ -12,7 +12,7 @@ ipython-genutils==0.2.0
 Jinja2==2.8
 MarkupSafe==0.23
 matplotlib==1.5.0
-numpy==1.10.1
+numpy==1.14.5
 packaging==16.8
 pathlib2==2.2.1
 pexpect==4.2.1
@@ -29,6 +29,7 @@ reportlab==3.3.0
 rope==0.10.3
 scandir==1.5
 simplegeneric==0.8.1
-six==1.10.0
+six==1.11.0
 traitlets==4.3.2
 wcwidth==0.1.7
+Werkzeug==0.14.1

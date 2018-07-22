@@ -38,7 +38,8 @@ def get_all_channel_points(channel):
 
 
 def get_channel_image(channel, file_like, format_='png', interval_start=0,
-                      interval_end=None, clear=True, color='r', line_style='-'):
+                      interval_end=None, clear=True, color='r',
+                      line_style='-', highlight=None):
     x, y = get_channel_points(channel, interval_start, interval_end)
 
     get_image(
@@ -48,12 +49,13 @@ def get_channel_image(channel, file_like, format_='png', interval_start=0,
         _(u'Señal') if channel.type != 'r' else _(
             'Serie temporal de intervalos RR'),
         format_=format_,
-        ylabel=_('Tiempo (ms)') if channel.is_time else None,
-        xlabel=_('Secuencia') if channel.is_time else 'ms',
-        hide_axis=not channel.is_time,
+        ylabel=_('Tiempo (ms)') if channel.is_time else _('Amplitud'),
+        xlabel=_('Secuencia'),
+        hide_axis=False,
         color=color,
         line_style=line_style,
-        clear=clear
+        clear=clear,
+        highlight=highlight
     )
 
 
@@ -69,7 +71,8 @@ def get_media_image(channel, file_like, initial_time, final_time,
         title,
         format_=format_,
         ylabel=_('Media (ms)'),
-        xlabel=_('Intervalo (%(interval)d m)') % {'interval': interval / 60000},
+        xlabel=_(
+            'Intervalo (%(interval)d m)') % {'interval': interval / 60000},
         hide_axis=not channel.is_time,
         clear=clear,
         color=color,
@@ -93,7 +96,8 @@ def get_standard_deviation_image(channel, file_like, initial_time, final_time,
         }) if title is None else title,
         format_=format_,
         ylabel=_('STD (ms)'),
-        xlabel=_('Intervalo (%(interval)d m)') % {'interval': interval / 60000},
+        xlabel=_(
+            'Intervalo (%(interval)d m)') % {'interval': interval / 60000},
         hide_axis=not channel.is_time,
         clear=clear,
         color=color,
@@ -137,7 +141,8 @@ def get_SDSD_image(channel, file_like, initial_time, final_time, interval,
         }) if title is None else title,
         format_=format_,
         ylabel=_('SDSD (ms)'),
-        xlabel=_('Intervalo (%(interval)d m)') % {'interval': interval / 60000},
+        xlabel=_(
+            'Intervalo (%(interval)d m)') % {'interval': interval / 60000},
         hide_axis=not channel.is_time,
         clear=clear,
         color=color,
@@ -159,7 +164,8 @@ def get_PNN50_image(channel, file_like, initial_time, final_time, interval,
         }) if title is None else title,
         format_=format_,
         ylabel=_('PNN50 (ms)'),
-        xlabel=_('Intervalo (%(interval)d m)') % {'interval': interval / 60000},
+        xlabel=_(
+            'Intervalo (%(interval)d m)') % {'interval': interval / 60000},
         hide_axis=not channel.is_time,
         clear=clear,
         color=color,
@@ -261,7 +267,6 @@ def get_fft_image(channel, file_like, initial_time, final_time, interval,  # noq
     if file_like is not None:
         plt.tight_layout()
         plt.savefig(file_like, format=format_, bbox_inches='tight')
-        plt.show()
 
 
 def get_histogram(channel, initial_time, final_time, file_like, bins=10,
@@ -283,7 +288,6 @@ def get_histogram(channel, initial_time, final_time, file_like, bins=10,
     if file_like is not None:
         plt.tight_layout()
         plt.savefig(file_like, format=format_, bbox_inches='tight')
-        plt.show()
 
 
 def get_all_images(channel, file_like, initial_time, final_time, interval,
@@ -387,7 +391,7 @@ def get_all_images(channel, file_like, initial_time, final_time, interval,
 
 def get_image(x, y, file_like=None, title=None, format_='png', xlabel=None,
               ylabel=None, line_style='-', hide_axis=False, clear=True,
-              color='r', label=None):
+              color='r', label=None, highlight=None):
     if clear:
         plt.clf()
     plt.plot(x, y, line_style, color=color, label=label if label else '')
@@ -407,6 +411,9 @@ def get_image(x, y, file_like=None, title=None, format_='png', xlabel=None,
 
     plt.grid(True)
 
+    if highlight:
+        plt.axvspan(highlight[0], highlight[1], facecolor='b', alpha=0.5)
+
     if hide_axis:
         # plt.axis('off')
         plt.tick_params(
@@ -421,14 +428,12 @@ def get_image(x, y, file_like=None, title=None, format_='png', xlabel=None,
     if file_like is not None:
         plt.tight_layout()
         plt.savefig(file_like, format=format_, bbox_inches='tight')
-        plt.show()
 
 
 def save(file_like, format_='png'):
     if file_like is not None:
         plt.tight_layout()
         plt.savefig(file_like, format=format_, bbox_inches='tight')
-        plt.show()
     plt.clf()
 
 
